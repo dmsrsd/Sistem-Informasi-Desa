@@ -2,11 +2,11 @@ import React from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {News} from '../../../assets';
 
-const NewsCard = ({onPress}) => {
+const NewsCard = ({image, author, title, category, date, onPress}) => {
   return (
     <TouchableOpacity activeOpacity={0.7} onPress={onPress}>
       <View style={styles.container}>
-        <Image source={News} style={styles.image} />
+        <Image source={image} style={styles.image} />
         <View
           style={{
             position: 'absolute',
@@ -17,12 +17,12 @@ const NewsCard = ({onPress}) => {
             justifyContent: 'center',
             textAlign: 'right',
           }}>
-          <Text style={styles.text}>Judul Berita</Text>
+          <Text style={styles.text}>{title}</Text>
         </View>
         <View style={styles.content}>
-          <Text style={styles.textCategory}>Kategori</Text>
-          <Text style={styles.textDate}>Tanggal</Text>
-          <Text style={styles.textSub}>Penulis</Text>
+          <Text style={styles.textCategory}>{category}</Text>
+          <Text style={styles.textDate}>{date}</Text>
+          <Text style={styles.textSub}>{author}</Text>
         </View>
       </View>
     </TouchableOpacity>

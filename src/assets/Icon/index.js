@@ -6,6 +6,7 @@ import IcCatOn from './IcCatOn.svg'
 import IcCatOff from './IcCatOff.svg'
 import IcNewsOn from './IcNewsOn.svg'
 import IcNewsOff from './IcNewsOff.svg'
+// import IcArrow from './IcArrow.svg'
 
 export {
   IcBack,
@@ -16,4 +17,5 @@ export {
   IcCatOff,
   IcNewsOff,
   IcNewsOn,
+  // IcArrow
 }

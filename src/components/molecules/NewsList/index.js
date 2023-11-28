@@ -1,9 +1,7 @@
-import {StyleSheet, Text, View, Image} from 'react-native';
 import React from 'react';
-import {News} from '../../../assets';
-import {TouchableOpacity} from 'react-native';
+import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
-const NewsList = ({onPress}) => {
+const NewsList = ({title, image, category, onPress}) => {
   return (
     <TouchableOpacity activeOpacity={0.7} onPress={onPress}>
       <View
@@ -13,10 +11,10 @@ const NewsList = ({onPress}) => {
           paddingHorizontal: 24,
           paddingVertical: 10,
         }}>
-        <Image source={News} style={styles.imageTab} />
+        <Image source={image} style={styles.imageTab} />
         <View>
-          <Text style={styles.Judul}>Judul Post</Text>
-          <Text style={styles.Category}>Kategori Post</Text>
+          <Text style={styles.Judul}>{title}</Text>
+          <Text style={styles.Category}>{category}</Text>
         </View>
       </View>
     </TouchableOpacity>

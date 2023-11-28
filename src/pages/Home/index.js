@@ -1,30 +1,135 @@
-import React from 'react';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
-import {Gap} from '../../components/atoms';
+import {
+  Modal,
+  TextInput,
+  Button,
+  ScrollView,
+  StyleSheet,
+  Text,
+  View,
+  RefreshControl,
+} from 'react-native';
 import {
   HomeCard,
   HomeHeader,
   HomeTab,
   NewsFeed,
 } from '../../components/molecules';
+import {Gap} from '../../components/atoms';
+import axios from 'axios';
+import {getCategories, getPostData} from '../../redux/action';
+import {useDispatch, useSelector} from 'react-redux';
+import React, {useEffect, useState} from 'react';
 
-const Home = () => {
+const Home = ({navigation}) => {
+  const dispatch = useDispatch();
+  const {posts} = useSelector(state => state.homeReducer);
+  const {categories} = useSelector(state => state.homeReducer);
+
+  useEffect(() => {
+    dispatch(getPostData());
+    console.log('response posts', posts);
+  }, [dispatch]);
+
+  useEffect(() => {
+    dispatch(getCategories());
+    console.log('response categories', categories);
+  }, [dispatch]);
+
+  const [visible, setVisible] = useState(false);
+  const [name, setName] = useState('');
+  const [content, setContent] = useState('');
+
+  const showModal = () => {
+    setVisible(true);
+  };
+
+  const hideModal = () => {
+    setVisible(false);
+  };
+
+  const handleNameChange = text => {
+    setName(text);
+  };
+
+  const handleEmailChange = text => {
+    setContent(text);
+  };
+
+  const handleSubmit = () => {
+    axios
+      .post('https://sidesa.androidcorners.com/api/admin/saran', {
+        name: name,
+        content: content,
+      })
+      .then(function (response) {
+        console.log(response);
+        hideModal();
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+  };
+
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    dispatch(getPostData());
+    dispatch(getCategories());
+    setRefreshing(false);
+  }, []);
+
   return (
     <View style={styles.mainPage}>
       <View style={styles.headerContainer}>
         <HomeHeader />
       </View>
-      <ScrollView style={styles.scrollView}>
+      <ScrollView
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
+        <Modal visible={visible} animationType="slide" transparent={true}>
+          <View style={styles.modalContainer}>
+            <View style={styles.modal}>
+              <TextInput
+                style={styles.input}
+                placeholder="Masukkan Nama Anda"
+                onChangeText={handleNameChange}
+                value={name}
+              />
+              <TextInput
+                style={styles.input}
+                placeholder="Masukkan Saran Anda"
+                onChangeText={handleEmailChange}
+                value={content}
+              />
+              <View style={styles.buttonContainer}>
+                <Button title="Cancel" onPress={hideModal} />
+                <Button title="Submit" onPress={handleSubmit} />
+              </View>
+            </View>
+          </View>
+        </Modal>
         <View style={styles.custom}>
           <Text style={styles.headTitle}>Latest Categories</Text>
           <ScrollView horizontal showsHorizontalScrollIndicator={false}>
             <View style={styles.newsCardContainer}>
               <Gap width={24} />
-              <NewsFeed />
-              <NewsFeed />
-              <NewsFeed />
-              <NewsFeed />
-              <NewsFeed />
+              {categories.map(itemCat => {
+                const category = itemCat.slug;
+                const nama = itemCat.name;
+                return (
+                  <NewsFeed
+                    key={itemCat.id}
+                    name={itemCat.name}
+                    onPress={() =>
+                      navigation.navigate('NewsCategory', {category, nama})
+                    }
+                  />
+                );
+              })}
             </View>
           </ScrollView>
           <View>
@@ -32,11 +137,24 @@ const Home = () => {
             <ScrollView horizontal showsHorizontalScrollIndicator={false}>
               <View style={styles.newsCardContainer}>
                 <Gap width={24} />
-                <HomeCard />
-                <HomeCard />
-                <HomeCard />
-                <HomeCard />
-                <HomeCard />
+                {posts.map(itemPost => {
+                  const comments = itemPost.comments;
+                  const slug = itemPost.slug;
+                  return (
+                    <HomeCard
+                      key={itemPost.id}
+                      name={itemPost.title}
+                      textSub={itemPost.category.name}
+                      image={{uri: itemPost.image}}
+                      onPress={() =>
+                        navigation.navigate('NewsDetail', itemPost, {
+                          comments,
+                          slug,
+                        })
+                      }
+                    />
+                  );
+                })}
               </View>
             </ScrollView>
           </View>
@@ -46,6 +164,9 @@ const Home = () => {
           </View>
         </View>
       </ScrollView>
+      <View style={styles.container}>
+        <Button title="Saran" onPress={showModal} />
+      </View>
     </View>
   );
 };
@@ -72,7 +193,7 @@ const styles = StyleSheet.create({
   },
   tabContainer: {
     flex: 1,
-    minHeight: 150,
+    minHeight: 500,
   },
   headTitle: {
     fontFamily: 'Poppins-Medium',
@@ -80,5 +201,49 @@ const styles = StyleSheet.create({
     paddingTop: 10,
     color: '#343434',
     fontSize: 20,
+  },
+  container: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    margin: 20,
+  },
+  button: {
+    backgroundColor: '#007AFF',
+    borderRadius: 5,
+    padding: 10,
+  },
+  buttonText: {
+    color: '#fff',
+    textAlign: 'center',
+    fontSize: 16,
+  },
+  modal: {
+    backgroundColor: '#fff',
+    borderRadius: 5,
+    padding: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 20,
+  },
+  input: {
+    width: '100%',
+    marginBottom: 20,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderWidth: 1,
+    borderRadius: 5,
+    borderColor: '#ccc',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    borderRadius: 30,
   },
 });

@@ -1,12 +1,12 @@
 import React from 'react';
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 
-const NewsFeed = ({onPress}) => {
+const NewsFeed = ({name, onPress}) => {
   return (
     <TouchableOpacity activeOpacity={0.7} onPress={onPress}>
       <View style={styles.container}>
         <View style={styles.content}>
-          <Text style={styles.text}>Kategori</Text>
+          <Text style={styles.text}>{name}</Text>
         </View>
       </View>
     </TouchableOpacity>

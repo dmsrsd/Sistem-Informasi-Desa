@@ -2,19 +2,19 @@ import React from 'react';
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import {News} from '../../../assets';
 
-const HomeCard = ({onPress}) => {
+const HomeCard = ({ image, name,textSub, onPress }) => {
   return (
     <TouchableOpacity activeOpacity={0.7} onPress={onPress}>
       <View style={styles.container}>
-        <Image source={News} style={styles.image} />
+        <Image source={image} style={styles.image} />
         <View style={styles.content}>
-          <Text style={styles.text}>Judul Berita</Text>
-          <Text style={styles.textSub}>Kategori Berita</Text>
+          <Text style={styles.text}>{name}</Text>
+          <Text style={styles.textSub}>{textSub}</Text>
         </View>
       </View>
     </TouchableOpacity>
-  );
-};
+  )
+}
 
 export default HomeCard;
 
@@ -41,6 +41,7 @@ const styles = StyleSheet.create({
     fontFamily: 'Poppins-Medium',
     color: 'white',
     paddingBottom: 10,
+    width : 200
   },
   textSub: {
     fontSize: 10,

@@ -1,7 +1,10 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import {Dimensions, StyleSheet, Text, View} from 'react-native';
 import {SceneMap, TabBar, TabView} from 'react-native-tab-view';
 import NewsList from '../NewsList';
+import {useDispatch, useSelector} from 'react-redux';
+import {useNavigation} from '@react-navigation/native';
+import {getPostDataByCategory} from '../../../redux/action';
 
 const renderTabBar = props => (
   <TabBar
@@ -27,24 +30,81 @@ const renderTabBar = props => (
 );
 
 const Ekonomi = () => {
+  
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const {ekonomi} = useSelector(state => state.homeReducer);
+
+  useEffect(() => {
+    dispatch(getPostDataByCategory('ekonomi'));
+    console.log('response ekonomi', ekonomi);
+  }, [dispatch]);
+
   return (
     <View style={{paddingTop: 8}}>
-      <NewsList />
+      {ekonomi.map(item => {
+        return (
+          <NewsList
+            key={item.id}
+            title={item.title}
+            category={item.category.name}
+            image={{uri: item.image}}
+            onPress={() => navigation.navigate('NewsDetail', item)}
+          />
+        );
+      })}
     </View>
   );
 };
 
 const Keamanan = () => {
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const {keamanan} = useSelector(state => state.homeReducer);
+
+  useEffect(() => {
+    dispatch(getPostDataByCategory('keamanan'));
+  }, [dispatch]);
+
   return (
     <View style={{paddingTop: 8}}>
-      <NewsList />
+      {keamanan.map(item => {
+        return (
+          <NewsList
+            key={item.id}
+            title={item.title}
+            category={item.category.name}
+            image={{uri: item.image}}
+            onPress={() => navigation.navigate('NewsDetail', item)}
+          />
+        );
+      })}
     </View>
   );
 };
+
 const Informasi = () => {
+  const navigation = useNavigation();
+  const dispatch = useDispatch();
+  const {layanan} = useSelector(state => state.homeReducer);
+
+  useEffect(() => {
+    dispatch(getPostDataByCategory('layanan'));
+  }, [dispatch]);
+
   return (
     <View style={{paddingTop: 8}}>
-      <NewsList />
+      {layanan.map(item => {
+        return (
+          <NewsList
+            key={item.id}
+            title={item.title}
+            category={item.category.name}
+            image={{uri: item.image}}
+            onPress={() => navigation.navigate('NewsDetail', item)}
+          />
+        );
+      })}
     </View>
   );
 };
@@ -64,6 +124,7 @@ const HomeTab = () => {
     2: Informasi,
     3: Keamanan,
   });
+
   return (
     <TabView
       renderTabBar={renderTabBar}
