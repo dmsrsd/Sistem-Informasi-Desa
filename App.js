@@ -4,6 +4,7 @@ import 'react-native-gesture-handler';
 import Router from './src/router';
 import { Provider } from 'react-redux';
 import store from './src/redux/store';
+import Toast from 'react-native-toast-message';
 
 
 const App = () => {

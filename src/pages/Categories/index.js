@@ -1,5 +1,5 @@
-import React, {useEffect} from 'react';
-import {ScrollView, StyleSheet, Text, View} from 'react-native';
+import React, {useEffect, useState} from 'react';
+import {ScrollView, StyleSheet, Text, View, RefreshControl} from 'react-native';
 import {CategoriesList, HomeHeader} from '../../components/molecules';
 import {useDispatch, useSelector} from 'react-redux';
 import {getCategories} from '../../redux/action';
@@ -7,6 +7,14 @@ import {getCategories} from '../../redux/action';
 const Categories = ({navigation}) => {
   const dispatch = useDispatch();
   const {categories} = useSelector(state => state.homeReducer);
+  const [refreshing, setRefreshing] = useState(false);
+
+  // definisikan fungsi handleRefresh
+  const handleRefresh = () => {
+    setRefreshing(true);
+    dispatch(getCategories());
+    setRefreshing(false);
+  };
 
   useEffect(() => {
     dispatch(getCategories());
@@ -18,7 +26,10 @@ const Categories = ({navigation}) => {
       <View style={styles.headerContainer}>
         <HomeHeader />
       </View>
-      <ScrollView>
+      <ScrollView
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={handleRefresh} />
+        }>
         <View style={{backgroundColor: 'white'}}>
           <View style={styles.custom}>
             <Text style={styles.headTitle}>Semua Kategori</Text>

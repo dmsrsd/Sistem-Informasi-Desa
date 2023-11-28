@@ -19,6 +19,7 @@ import axios from 'axios';
 import {getCategories, getPostData} from '../../redux/action';
 import {useDispatch, useSelector} from 'react-redux';
 import React, {useEffect, useState} from 'react';
+import Toast from 'react-native-toast-message';
 
 const Home = ({navigation}) => {
   const dispatch = useDispatch();
@@ -62,11 +63,29 @@ const Home = ({navigation}) => {
         content: content,
       })
       .then(function (response) {
-        console.log(response);
+        console.log('res-post', response);
         hideModal();
+        Toast.show({
+          type: 'success',
+          text1: 'Saran terkirim!',
+          text2: 'Terima kasih atas masukan Anda',
+          visibilityTime: 3000,
+          autoHide: true,
+          topOffset: 30,
+          bottomOffset: 40,
+        });
       })
       .catch(function (error) {
         console.log(error);
+        Toast.show({
+          type: 'error',
+          text1: 'Gagal mengirim saran',
+          text2: 'Silakan coba lagi nanti',
+          visibilityTime: 3000,
+          autoHide: true,
+          topOffset: 30,
+          bottomOffset: 40,
+        });
       });
   };
 

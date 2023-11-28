@@ -10,9 +10,11 @@ import {
   TextInput,
   TouchableOpacity,
   View,
+  RefreshControl,
 } from 'react-native';
 import {IcBack} from '../../assets/Icon';
 import Comments from '../Comments';
+import Toast from 'react-native-toast-message';
 
 const NewsDetail = ({navigation, route}) => {
   const detail = route.params;
@@ -24,8 +26,38 @@ const NewsDetail = ({navigation, route}) => {
   const [email, setEmail] = useState('');
   const [content, setContent] = useState('');
 
+  const [latestComments, setLatestComments] = useState([]);
+  const [refreshing, setRefreshing] = useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    fetchLatestComments()
+      .then(latestComments => {
+        setLatestComments(latestComments);
+        setRefreshing(false);
+      })
+      .catch(error => {
+        console.error(error);
+        setRefreshing(false);
+      });
+  }, []);
+
+  const fetchLatestComments = () => {
+    return axios
+      .get(`https://sidesa.androidcorners.com/api/web/posts/${slug}`)
+      .then(response => {
+        return response.data.data.comments;
+      });
+  };
+
   useEffect(() => {
-    console.log('response detail', detail);
+    fetchLatestComments()
+      .then(latestComments => {
+        setLatestComments(latestComments);
+      })
+      .catch(error => {
+        console.error(error);
+      });
   }, []);
 
   const showModal = () => {
@@ -61,8 +93,27 @@ const NewsDetail = ({navigation, route}) => {
           routes: [{name: 'MyApp'}],
         });
         hideModal();
+        Toast.show({
+          type: 'success',
+          text1: 'Komentar terkirim!',
+          text2: 'Silahkan refresh untuk melihat komentar Anda!',
+          visibilityTime: 3000,
+          autoHide: true,
+          topOffset: 30,
+          bottomOffset: 40,
+        });
       })
-      .catch(function (error) {});
+      .catch(function (error) {
+        Toast.show({
+          type: 'error',
+          text1: 'Gagal mengirim saran',
+          text2: 'Silakan coba lagi nanti',
+          visibilityTime: 3000,
+          autoHide: true,
+          topOffset: 30,
+          bottomOffset: 40,
+        });
+      });
   };
 
   return (
